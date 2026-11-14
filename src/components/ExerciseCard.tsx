@@ -11,6 +11,7 @@ import { deleteSet, getLastTime, logSet, updateSet, type LastTime } from '../db/
 import { fmtDaysAgo, fmtKg, fmtSets, fmtTarget, fmtWeight, weightLabel } from '../lib/format';
 import { progressionSuggestion } from '../lib/progression';
 import { unlockAudio } from '../lib/sound';
+import { navigate } from '../lib/router';
 import { Stepper } from './Stepper';
 import { Sheet } from './Sheet';
 
@@ -138,11 +139,16 @@ export function ExerciseCard({
 
       {expanded && (
         <div className="exercise-body">
-          {canSwap && (
-            <button type="button" className="btn btn-plain btn-small swap-btn" onClick={() => setSwapOpen(true)}>
-              ⇄ Swap exercise
+          <div className="exercise-tools">
+            {canSwap && (
+              <button type="button" className="btn btn-plain btn-small" onClick={() => setSwapOpen(true)}>
+                ⇄ Swap exercise
+              </button>
+            )}
+            <button type="button" className="btn btn-plain btn-small" onClick={() => navigate(`/exercise/${ex.id}`)}>
+              Progress
             </button>
-          )}
+          </div>
 
           <div className="last-time">
             <span className="last-time-label">Last time</span>

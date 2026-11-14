@@ -157,3 +157,66 @@ export async function updateSet(id: number, reps: number, weight: number): Promi
 export async function deleteSet(id: number): Promise<void> {
   await db.sets.delete(id);
 }
+
+// ─── History ────────────────────────────────────────────────────────────────
+
+export interface SessionListItem {
+  session: Session;
+  programmeName: string;
+  setCount: number;
+  /** Duration in ms (to the last set if the session is still open). */
+  durationMs: number;
+}
+
+/** All sessions, newest first, with set counts. */
+export async function listSessions(): Promise<SessionListItem[]> {
+  const [sessions, programmes, sets] = await Promise.all([
+    db.sessions.orderBy('startedAt').reverse().toArray(),
+    db.programmes.toArray(),
+    db.sets.toArray(),
+  ]);
+  const names = new Map(programmes.map((p) => [p.id, p.name]));
+  const counts = new Map<number, { n: number; last: number }>();
+  for (const s of sets) {
+    const c = counts.get(s.sessionId) ?? { n: 0, last: 0 };
+    c.n += 1;
+    c.last = Math.max(c.last, s.timestamp);
+    counts.set(s.sessionId, c);
+  }
+  return sessions.map((session) => {
+    const c = counts.get(session.id!);
+    const end = session.finishedAt ?? c?.last ?? session.startedAt;
+    return {
+      session,
+      programmeName: names.get(session.programmeId) ?? session.programmeId,
+      setCount: c?.n ?? 0,
+      durationMs: end - session.startedAt,
+    };
+  });
+}
+
+/** Delete a session and all of its sets. */
+export async function deleteSession(sessionId: number): Promise<void> {
+  await db.transaction('rw', db.sessions, db.sets, async () => {
+    await db.sets.where('sessionId').equals(sessionId).delete();
+    await db.sessions.delete(sessionId);
+  });
+}
+
+/**
+ * Add a forgotten set to a past session. Its timestamp is placed just after the
+ * exercise's last set in that session, so ordering and personal-best history
+ * stay correct.
+ */
+export async function addSetToSession(
+  sessionId: number,
+  exerciseId: string,
+  reps: number,
+  weight: number,
+): Promise<number> {
+  const session = await db.sessions.get(sessionId);
+  const sets = await getSessionSets(sessionId);
+  const sameEx = sets.filter((s) => s.exerciseId === exerciseId);
+  const after = sameEx[sameEx.length - 1]?.timestamp ?? sets[sets.length - 1]?.timestamp ?? session?.startedAt ?? Date.now();
+  return db.sets.add({ sessionId, exerciseId, reps, weight, timestamp: after + 1000 });
+}
