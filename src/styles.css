@@ -920,3 +920,190 @@ h1 {
   color: var(--muted);
   font-weight: 600;
 }
+
+/* ── Exercise figures ───────────────────────────────────────────────────── */
+
+:root {
+  --fig-body: #8c9cb6;
+  --fig-far: #5f6d85;
+  --fig-stroke: #39445a;
+  --muscle-primary: #ff3b30;
+  --muscle-secondary: #ff9f45;
+  --muscle-idle: #6f7d94;
+  --equip: #c9ced8;
+  --equip-soft: #444c5b;
+}
+
+:root[data-theme='light'] {
+  --fig-body: #93a3bc;
+  --fig-far: #bcc6d6;
+  --fig-stroke: #5a667b;
+  --muscle-primary: #e5261b;
+  --muscle-secondary: #ff8f2e;
+  --muscle-idle: #b3bdcc;
+  --equip: #3a4150;
+  --equip-soft: #c3c9d3;
+}
+
+.figure {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+}
+
+.figure-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.figure-pair figure {
+  margin: 0;
+}
+
+.figure-pair figcaption {
+  text-align: center;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.screen-wide {
+  max-width: 1100px;
+}
+
+.demo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.demo-card {
+  padding: 12px;
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.demo-card h2 {
+  font-size: 16px;
+  margin-bottom: 6px;
+}
+
+/* ── Demo screen ────────────────────────────────────────────────────────── */
+
+.demo-stage {
+  margin: 8px -4px 4px;
+  padding: 8px;
+  border-radius: 18px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.center {
+  text-align: center;
+}
+
+.demo-link {
+  margin-bottom: 16px;
+}
+
+.cues {
+  margin: 0 0 20px;
+  padding: 0;
+  list-style: none;
+  counter-reset: cue;
+  display: grid;
+  gap: 8px;
+}
+
+.cues li {
+  counter-increment: cue;
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.cues li::before {
+  content: counter(cue);
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--accent-text);
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.muscle-map {
+  margin-bottom: 24px;
+}
+
+.muscle-figures {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  max-width: 300px;
+  margin: 0 auto 12px;
+}
+
+.muscle-figures figure {
+  margin: 0;
+}
+
+.muscle-figures svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.muscle-figures figcaption {
+  text-align: center;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.muscle-legend {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+}
+
+.muscle-legend > div {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 8px;
+}
+
+.muscle-legend dt {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.muscle-legend dd {
+  margin: 0;
+}
+
+.swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+}
+
+.swatch-primary {
+  background: var(--muscle-primary);
+}
+
+.swatch-secondary {
+  background: var(--muscle-secondary);
+}

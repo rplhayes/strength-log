@@ -93,6 +93,9 @@ export function ExerciseDetailScreen({ exerciseId }: { exerciseId: string }) {
       <p className="muted detail-sub">
         Target {fmtTarget(ex)} · {history.length} {history.length === 1 ? 'session' : 'sessions'}
       </p>
+      <button type="button" className="btn btn-plain btn-small demo-link" onClick={() => navigate(`/exercise/${ex.id}/demo`)}>
+        ▶ How to do it
+      </button>
 
       {history.length === 0 ? (
         <p className="muted empty">No sets logged yet. Your progress chart appears after your first session.</p>

@@ -3,6 +3,8 @@ import { useRoute } from './lib/router';
 import { HomeScreen } from './screens/Home';
 import { WorkoutScreen } from './screens/Workout';
 import { SummaryScreen } from './screens/Summary';
+import { DemosScreen } from './screens/Demos';
+import { DemoScreen } from './screens/Demo';
 import { HistoryScreen } from './screens/History';
 import { SessionDetailScreen } from './screens/SessionDetail';
 import { lazy, Suspense } from 'react';
@@ -16,6 +18,11 @@ import { TabBar } from './components/TabBar';
 
 export function App() {
   const path = useRoute();
+
+  if (path === 'demos' || path === '/demos') return <DemosScreen />;
+
+  const demo = path.match(/^\/exercise\/([\w-]+)\/demo$/);
+  if (demo) return <DemoScreen exerciseId={demo[1]} />;
 
   const workout = path.match(/^\/workout\/(\d+)$/);
   if (workout) return <WorkoutScreen sessionId={Number(workout[1])} />;
