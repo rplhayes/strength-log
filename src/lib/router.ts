@@ -25,6 +25,24 @@ export function useRoute(): string {
   return path;
 }
 
+/** How many in-app navigations can be undone with history.back(). */
+let inAppDepth = 0;
+
 export function navigate(path: string): void {
+  if (currentPath() === path) return;
+  inAppDepth += 1;
   window.location.hash = path;
+}
+
+/**
+ * Go back to the previous screen if we got here by navigating inside the app,
+ * otherwise to `fallback` (e.g. the app was reopened directly on this page).
+ */
+export function goBack(fallback: string): void {
+  if (inAppDepth > 0) {
+    inAppDepth -= 1;
+    window.history.back();
+  } else {
+    navigate(fallback);
+  }
 }

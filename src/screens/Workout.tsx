@@ -76,7 +76,11 @@ export function WorkoutScreen({ sessionId }: { sessionId: number }) {
         <span className="muted small">{sets.length} {sets.length === 1 ? 'set' : 'sets'}</span>
       </header>
 
-      {finished && <p className="banner">This workout is finished. Editing past workouts comes with History.</p>}
+      {finished && (
+        <button type="button" className="banner" onClick={() => navigate(`/history/session/${sessionId}`)}>
+          This workout is finished. <strong>Edit it in History ›</strong>
+        </button>
+      )}
 
       <div className="exercise-list">
         {programme.slots.map((slot) => {
