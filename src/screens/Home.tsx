@@ -10,6 +10,9 @@ import type { Programme, Session } from '../db/types';
 import { fmtDate, fmtDaysAgo } from '../lib/format';
 import { navigate } from '../lib/router';
 import { Sheet } from '../components/Sheet';
+import { setMeta } from '../db/db';
+import { DEFAULT_APP_NAME, isStandalone, shouldRemindBackup, snoozeBackupReminder, useMeta } from '../lib/settings';
+import { useUpdateState } from '../lib/updateContext';
 
 export function HomeScreen() {
   const data = useLiveQuery(async () => {
@@ -19,14 +22,18 @@ export function HomeScreen() {
     const unfinishedSetCount = unfinished?.id
       ? await db.sets.where('sessionId').equals(unfinished.id).count()
       : 0;
-    return { programmes, last, unfinished, unfinishedSetCount };
+    const remindBackup = await shouldRemindBackup();
+    return { programmes, last, unfinished, unfinishedSetCount, remindBackup };
   }, []);
+  const appName = useMeta<string>('appName', DEFAULT_APP_NAME);
+  const installTipDismissed = useMeta<boolean>('installTipDismissed', false);
+  const { needRefresh, update } = useUpdateState();
 
   // When the user picks a different programme while one is unfinished.
   const [conflict, setConflict] = useState<{ open: Session; wanted: Programme } | null>(null);
 
   if (!data) return null;
-  const { programmes, last, unfinished, unfinishedSetCount } = data;
+  const { programmes, last, unfinished, unfinishedSetCount, remindBackup } = data;
   const nameOf = (id: string) => programmes.find((p) => p.id === id)?.name ?? id;
 
   const begin = async (p: Programme) => {
@@ -50,8 +57,17 @@ export function HomeScreen() {
   return (
     <main className="screen">
       <header className="screen-header">
-        <h1>Strength Log</h1>
+        <h1>{appName}</h1>
       </header>
+
+      {needRefresh && (
+        <div className="banner banner-update">
+          <span>A new version of the app is ready.</span>
+          <button type="button" className="btn btn-primary btn-small" onClick={update}>
+            Update
+          </button>
+        </div>
+      )}
 
       {unfinished?.id !== undefined && (
         <button
@@ -67,6 +83,41 @@ export function HomeScreen() {
           </span>
           <span aria-hidden="true">›</span>
         </button>
+      )}
+
+      {remindBackup && (
+        <div className="banner banner-reminder">
+          <span>
+            <strong>Time for a backup?</strong>
+            <br />
+            It’s been over a month. Your data only lives on this phone.
+          </span>
+          <span className="banner-actions">
+            <button type="button" className="btn btn-primary btn-small" onClick={() => navigate('/settings')}>
+              Back up
+            </button>
+            <button type="button" className="btn btn-ghost btn-small" onClick={() => snoozeBackupReminder()}>
+              Later
+            </button>
+          </span>
+        </div>
+      )}
+
+      {!isStandalone() && !installTipDismissed && (
+        <div className="banner banner-tip">
+          <span>
+            <strong>Install the app:</strong> in Safari tap <strong>Share</strong> → <strong>Add to Home Screen</strong>.
+            It then works offline in the gym.
+          </span>
+          <button
+            type="button"
+            className="btn btn-ghost btn-small"
+            aria-label="Dismiss install tip"
+            onClick={() => setMeta('installTipDismissed', true)}
+          >
+            ✕
+          </button>
+        </div>
       )}
 
       <p className="muted section-intro">Choose today’s workout</p>
