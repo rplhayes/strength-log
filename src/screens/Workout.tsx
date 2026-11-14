@@ -10,6 +10,9 @@ import { fmtDuration } from '../lib/format';
 import { navigate } from '../lib/router';
 import { ExerciseCard } from '../components/ExerciseCard';
 import { Sheet } from '../components/Sheet';
+import { RestTimerBar } from '../components/RestTimerBar';
+import { useRestTimer } from '../lib/useRestTimer';
+import { useWakeLock } from '../lib/useWakeLock';
 
 export function WorkoutScreen({ sessionId }: { sessionId: number }) {
   const data = useLiveQuery(async () => {
@@ -24,6 +27,11 @@ export function WorkoutScreen({ sessionId }: { sessionId: number }) {
   const [expanded, setExpanded] = useState<string | null>(null);
   const [confirmFinish, setConfirmFinish] = useState(false);
   const initialised = useRef(false);
+  const rest = useRestTimer(sessionId);
+
+  // Keep the screen on while this workout is in progress.
+  const inProgress = !!data?.session && data.session.finishedAt === undefined;
+  useWakeLock(inProgress);
 
   // On first load, open the first exercise that still has sets to do.
   useEffect(() => {
@@ -53,8 +61,9 @@ export function WorkoutScreen({ sessionId }: { sessionId: number }) {
   const finished = session.finishedAt !== undefined;
 
   const onFinish = async () => {
-    await finishSession(sessionId);
-    navigate('/');
+    rest.skip();
+    const kept = await finishSession(sessionId);
+    navigate(kept ? `/summary/${sessionId}` : '/');
   };
 
   return (
@@ -86,6 +95,7 @@ export function WorkoutScreen({ sessionId }: { sessionId: number }) {
               expanded={expanded === slot.id}
               onToggle={() => setExpanded(expanded === slot.id ? null : slot.id)}
               onSwap={(id) => swapSlotExercise(sessionId, slot.id, id)}
+              onLogged={(e) => rest.start(e.restSec, e.name)}
             />
           );
         })}
@@ -95,6 +105,16 @@ export function WorkoutScreen({ sessionId }: { sessionId: number }) {
         <button type="button" className="btn btn-finish btn-block" onClick={() => setConfirmFinish(true)}>
           Finish workout
         </button>
+      )}
+
+      {rest.timer && !finished && (
+        <RestTimerBar
+          timer={rest.timer}
+          remainingMs={rest.remainingMs}
+          done={rest.done}
+          onAdjust={rest.adjust}
+          onSkip={rest.skip}
+        />
       )}
 
       {confirmFinish && (
