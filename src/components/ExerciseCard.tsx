@@ -140,6 +140,9 @@ export function ExerciseCard({
       {expanded && (
         <div className="exercise-body">
           <div className="exercise-tools">
+            <button type="button" className="btn btn-plain btn-small" onClick={() => navigate(`/exercise/${ex.id}/demo`)}>
+              ▶ Demo
+            </button>
             {canSwap && (
               <button type="button" className="btn btn-plain btn-small" onClick={() => setSwapOpen(true)}>
                 ⇄ Swap exercise
