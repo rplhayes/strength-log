@@ -15,8 +15,21 @@ const ExerciseDetailScreen = lazy(() =>
   import('./screens/ExerciseDetail').then((m) => ({ default: m.ExerciseDetailScreen })),
 );
 import { TabBar } from './components/TabBar';
+import { SettingsScreen } from './screens/Settings';
+import { ExerciseEditorScreen } from './screens/ExerciseEditor';
+import { useApplySettings } from './lib/settings';
+import { UpdateProvider } from './lib/updateContext';
 
 export function App() {
+  useApplySettings();
+  return (
+    <UpdateProvider>
+      <Routes />
+    </UpdateProvider>
+  );
+}
+
+function Routes() {
   const path = useRoute();
 
   if (path === 'demos' || path === '/demos') return <DemosScreen />;
@@ -61,10 +74,20 @@ export function App() {
     );
   }
 
+  const editExercise = path.match(/^\/settings\/exercise\/([\w-]+)$/);
+  if (editExercise) {
+    return (
+      <>
+        <ExerciseEditorScreen exerciseId={editExercise[1]} />
+        <TabBar active="settings" />
+      </>
+    );
+  }
+
   if (path === '/settings') {
     return (
       <>
-        <Placeholder title="Settings" note="Exercise editing, backups and theme arrive in stage 5." />
+        <SettingsScreen />
         <TabBar active="settings" />
       </>
     );
@@ -75,16 +98,5 @@ export function App() {
       <HomeScreen />
       <TabBar active="workout" />
     </>
-  );
-}
-
-function Placeholder({ title, note }: { title: string; note: string }) {
-  return (
-    <main className="screen">
-      <header className="screen-header">
-        <h1>{title}</h1>
-      </header>
-      <p className="muted">{note}</p>
-    </main>
   );
 }

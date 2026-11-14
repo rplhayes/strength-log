@@ -1107,3 +1107,113 @@ h1 {
 .swatch-secondary {
   background: var(--muscle-secondary);
 }
+
+/* ── Settings ───────────────────────────────────────────────────────────── */
+
+.settings-section {
+  margin-bottom: 28px;
+}
+
+.settings-group {
+  margin-top: 12px;
+}
+
+.settings-group-title {
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.backup-status {
+  margin: 0 0 4px;
+}
+
+.button-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.notice {
+  margin: 12px 0 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 15px;
+}
+
+.notice-ok {
+  background: color-mix(in srgb, var(--success) 15%, transparent);
+  color: var(--success);
+}
+
+.notice-error {
+  background: color-mix(in srgb, var(--danger) 15%, transparent);
+  color: var(--danger);
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.field-label {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.text-input {
+  min-height: 48px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-size: 17px;
+}
+
+.text-input:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: -1px;
+}
+
+.install-steps {
+  margin: 0 0 8px;
+  padding-left: 22px;
+  display: grid;
+  gap: 4px;
+}
+
+.editor-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px 10px;
+  margin: 8px 0 8px;
+}
+
+.reset-btn {
+  margin-top: 8px;
+}
+
+.banner-update,
+.banner-reminder,
+.banner-tip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 15px;
+}
+
+.banner-reminder {
+  border-color: var(--warning);
+}
+
+.banner-actions {
+  display: grid;
+  gap: 4px;
+  flex: none;
+}
