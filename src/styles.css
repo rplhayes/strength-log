@@ -1,0 +1,531 @@
+/*
+ * Strength Log styles. Mobile-first, designed for a 390 px iPhone in portrait.
+ * Dark mode is the default; [data-theme="light"] on <html> switches to light.
+ */
+
+:root {
+  --bg: #0f1115;
+  --surface: #181b22;
+  --surface-2: #222631;
+  --border: #2c313d;
+  --text: #eef0f4;
+  --muted: #9aa2b1;
+  --accent: #4f8cff;
+  --accent-text: #ffffff;
+  --success: #3ccf7f;
+  --danger: #ff5a5f;
+  --warning: #ffb547;
+
+  --radius: 14px;
+  --tap: 56px; /* minimum comfortable tap target */
+
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --tabbar-h: 64px;
+
+  color-scheme: dark;
+}
+
+:root[data-theme='light'] {
+  --bg: #f4f5f8;
+  --surface: #ffffff;
+  --surface-2: #eceef3;
+  --border: #d9dce4;
+  --text: #14171d;
+  --muted: #5d6575;
+  --accent: #2f6fe8;
+  --success: #1e9e5a;
+  --danger: #d93a40;
+  --warning: #b86e00;
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+  font-size: 17px;
+  line-height: 1.4;
+  -webkit-text-size-adjust: 100%;
+  overscroll-behavior-y: none;
+}
+
+button,
+input {
+  font: inherit;
+  color: inherit;
+}
+
+h1,
+h2 {
+  margin: 0;
+  line-height: 1.2;
+}
+
+h1 {
+  font-size: 28px;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.small {
+  font-size: 14px;
+}
+
+/* ── Layout ─────────────────────────────────────────────────────────────── */
+
+.screen {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: calc(var(--safe-top) + 12px) calc(var(--safe-right) + 16px)
+    calc(var(--safe-bottom) + var(--tabbar-h) + 24px) calc(var(--safe-left) + 16px);
+  min-height: 100dvh;
+}
+
+.screen-workout {
+  /* No tab bar on the workout screen; leave room for the rest timer later. */
+  padding-bottom: calc(var(--safe-bottom) + 96px);
+}
+
+.screen-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 48px;
+  margin-bottom: 16px;
+}
+
+.workout-header {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: var(--bg);
+  margin: 0 -16px 12px;
+  padding: calc(var(--safe-top) + 4px) 16px 8px;
+}
+
+.workout-header h1 {
+  flex: 1;
+  font-size: 22px;
+}
+
+.section-intro {
+  margin: 8px 0 12px;
+}
+
+/* ── Buttons ────────────────────────────────────────────────────────────── */
+
+.btn {
+  min-height: 48px;
+  padding: 0 18px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  background: var(--surface-2);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn-block {
+  display: block;
+  width: 100%;
+}
+
+.btn-small {
+  min-height: 40px;
+  padding: 0 12px;
+  font-size: 15px;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: var(--accent-text);
+}
+
+.btn-danger {
+  background: transparent;
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.btn-plain {
+  background: var(--surface-2);
+}
+
+.btn-ghost {
+  background: transparent;
+}
+
+.btn-log {
+  min-height: var(--tap);
+  margin-top: 12px;
+  font-size: 19px;
+}
+
+.btn-finish {
+  margin-top: 24px;
+  min-height: var(--tap);
+  background: var(--surface);
+  border-color: var(--success);
+  color: var(--success);
+  font-size: 18px;
+}
+
+/* ── Home ───────────────────────────────────────────────────────────────── */
+
+.banner {
+  display: block;
+  width: 100%;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  text-align: left;
+}
+
+.banner-resume {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--accent);
+  color: var(--accent-text);
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.banner-resume > span:last-child {
+  font-size: 32px;
+}
+
+.programme-list {
+  display: grid;
+  gap: 14px;
+}
+
+.programme-card {
+  display: grid;
+  gap: 6px;
+  min-height: 120px;
+  padding: 20px;
+  border-radius: 18px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  text-align: left;
+  cursor: pointer;
+}
+
+.programme-card:active {
+  background: var(--surface-2);
+}
+
+.programme-name {
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.programme-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.programme-ago {
+  font-weight: 600;
+  color: var(--accent);
+}
+
+/* ── Tab bar ────────────────────────────────────────────────────────────── */
+
+.tabbar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  display: flex;
+  height: calc(var(--tabbar-h) + var(--safe-bottom));
+  padding: 0 var(--safe-right) var(--safe-bottom) var(--safe-left);
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+}
+
+.tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.tab-active {
+  color: var(--accent);
+}
+
+/* ── Workout ────────────────────────────────────────────────────────────── */
+
+.exercise-list {
+  display: grid;
+  gap: 10px;
+}
+
+.exercise {
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.exercise-open {
+  border-color: var(--accent);
+}
+
+.exercise-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  min-height: 64px;
+  padding: 12px 16px;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.exercise-title {
+  display: grid;
+}
+
+.exercise-name {
+  font-size: 18px;
+  font-weight: 650;
+}
+
+.exercise-progress {
+  font-weight: 600;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.exercise-progress.is-done {
+  color: var(--success);
+}
+
+.exercise-body {
+  padding: 0 16px 16px;
+}
+
+.swap-btn {
+  margin-bottom: 12px;
+}
+
+.last-time {
+  display: grid;
+  gap: 2px;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  border-radius: 10px;
+  background: var(--surface-2);
+}
+
+.last-time-label {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.last-time-sets {
+  font-weight: 600;
+}
+
+.set-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.set-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 52px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: var(--surface-2);
+  border: 1px solid transparent;
+  text-align: left;
+}
+
+.set-active,
+.set-editing {
+  display: block;
+  border-color: var(--border);
+  background: var(--bg);
+}
+
+.set-row-head {
+  margin-bottom: 8px;
+}
+
+.set-label {
+  font-weight: 600;
+  min-width: 72px;
+}
+
+.set-value {
+  flex: 1;
+}
+
+.set-logged {
+  cursor: pointer;
+}
+
+.set-pending {
+  opacity: 0.6;
+}
+
+.tick {
+  color: var(--success);
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.set-edit-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+/* ── Stepper ────────────────────────────────────────────────────────────── */
+
+.stepper-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.stepper {
+  display: grid;
+  gap: 4px;
+}
+
+.stepper-label {
+  font-size: 13px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.stepper-row {
+  display: flex;
+  align-items: stretch;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+}
+
+.stepper-btn {
+  width: 48px;
+  min-height: var(--tap);
+  flex: none;
+  border: none;
+  background: transparent;
+  font-size: 26px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.stepper-btn:active {
+  background: var(--border);
+}
+
+.stepper-value {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  border: none;
+  background: transparent;
+  text-align: center;
+  font-size: 22px; /* ≥16px stops iOS zooming on focus */
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.stepper-value:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+/* ── Sheet ──────────────────────────────────────────────────────────────── */
+
+.sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgb(0 0 0 / 0.55);
+}
+
+.sheet {
+  width: 100%;
+  max-width: 480px;
+  padding: 20px 16px calc(var(--safe-bottom) + 16px);
+  border-radius: 20px 20px 0 0;
+  background: var(--surface);
+}
+
+.sheet-title {
+  font-size: 20px;
+  margin-bottom: 8px;
+}
+
+.sheet-body p {
+  margin: 0 0 8px;
+  color: var(--muted);
+}
+
+.sheet-actions {
+  display: grid;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.sheet-actions .btn {
+  min-height: var(--tap);
+}
