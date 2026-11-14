@@ -9,6 +9,8 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import type { Exercise, SetEntry, Slot } from '../db/types';
 import { deleteSet, getLastTime, logSet, updateSet, type LastTime } from '../db/queries';
 import { fmtDaysAgo, fmtKg, fmtSets, fmtTarget, fmtWeight, weightLabel } from '../lib/format';
+import { progressionSuggestion } from '../lib/progression';
+import { unlockAudio } from '../lib/sound';
 import { Stepper } from './Stepper';
 import { Sheet } from './Sheet';
 
@@ -23,6 +25,8 @@ interface Props {
   expanded: boolean;
   onToggle: () => void;
   onSwap: (exerciseId: string) => void;
+  /** Called after a set is logged (starts the rest timer). */
+  onLogged: (exercise: Exercise) => void;
 }
 
 interface Draft {
@@ -36,25 +40,46 @@ interface Draft {
  * - weight: today's previous set (so a weight change carries forward), else the
  *   matching set from last time, else 0.
  */
-function prefillFor(ex: Exercise, index: number, today: SetEntry[], last: LastTime | null): Draft {
+function prefillFor(
+  ex: Exercise,
+  index: number,
+  today: SetEntry[],
+  last: LastTime | null,
+  acceptedWeight: number | null,
+): Draft {
   const lastSets = last?.sets ?? [];
   const matching = lastSets[index] ?? lastSets[lastSets.length - 1];
   const prevToday = today[today.length - 1];
   return {
     reps: lastSets[index]?.reps ?? prevToday?.reps ?? matching?.reps ?? ex.repMin,
-    weight: prevToday?.weight ?? matching?.weight ?? 0,
+    // An accepted progression suggestion sets the weight for the first set.
+    weight: prevToday?.weight ?? acceptedWeight ?? matching?.weight ?? 0,
   };
 }
 
-export function ExerciseCard({ slot, exercise: ex, options, sessionId, sets, expanded, onToggle, onSwap }: Props) {
+export function ExerciseCard({
+  slot,
+  exercise: ex,
+  options,
+  sessionId,
+  sets,
+  expanded,
+  onToggle,
+  onSwap,
+  onLogged,
+}: Props) {
   // Most recent previous session of THIS exercise (alternatives have separate history).
   const last = useLiveQuery(() => getLastTime(ex.id, sessionId), [ex.id, sessionId]);
   const lastTime = last ?? null;
 
+  // Double-progression suggestion, based on the last session of this exercise.
+  const suggestion = useMemo(() => (lastTime ? progressionSuggestion(ex, lastTime.sets) : null), [ex, lastTime]);
+  const [acceptedWeight, setAcceptedWeight] = useState<number | null>(null);
+
   const nextIndex = sets.length;
   const prefill = useMemo(
-    () => prefillFor(ex, nextIndex, sets, lastTime),
-    [ex, nextIndex, sets, lastTime],
+    () => prefillFor(ex, nextIndex, sets, lastTime, acceptedWeight),
+    [ex, nextIndex, sets, lastTime, acceptedWeight],
   );
 
   const [draft, setDraft] = useState<Draft>(prefill);
@@ -73,10 +98,13 @@ export function ExerciseCard({ slot, exercise: ex, options, sessionId, sets, exp
 
   const onLog = async () => {
     if (busy) return;
+    // Must run inside the tap so iOS allows the rest-timer tone later.
+    unlockAudio();
     setBusy(true);
     try {
       await logSet(sessionId, ex.id, draft.reps, draft.weight);
       setExtraOpen(false);
+      onLogged(ex);
     } finally {
       setBusy(false);
     }
@@ -127,6 +155,23 @@ export function ExerciseCard({ slot, exercise: ex, options, sessionId, sets, exp
               <span className="muted">First time — pick a comfortable starting weight</span>
             )}
           </div>
+
+          {suggestion && sets.length === 0 && (
+            <div className={`suggestion ${acceptedWeight !== null ? 'suggestion-accepted' : ''}`}>
+              <span>
+                <strong>Hit the top of the range last time.</strong> Try {suggestionText(ex, suggestion.to)}
+              </span>
+              {acceptedWeight === null ? (
+                <button type="button" className="btn btn-small btn-primary" onClick={() => setAcceptedWeight(suggestion.to)}>
+                  Use it
+                </button>
+              ) : (
+                <button type="button" className="btn btn-small btn-plain" onClick={() => setAcceptedWeight(null)}>
+                  Undo
+                </button>
+              )}
+            </div>
+          )}
 
           <ol className="set-list">
             {Array.from({ length: rowCount }, (_, i) => {
@@ -203,19 +248,19 @@ export function ExerciseCard({ slot, exercise: ex, options, sessionId, sets, exp
                     </div>
                     {steppers(draft, setDraft)}
                     <button type="button" className="btn btn-primary btn-block btn-log" disabled={busy} onClick={onLog}>
-                      Log set · {fmtKg(draft.weight)} kg × {draft.reps}
+                      Log set · {fmtWeight(ex, draft.weight)} × {draft.reps}
                     </button>
                   </li>
                 );
               }
 
-              // A future set: show what last time suggests, greyed out.
-              const hint = lastTime?.sets[i];
+              // A future set, greyed out: today's working weight with last time's reps.
+              const hintReps = lastTime?.sets[i]?.reps;
               return (
                 <li key={`pending-${i}`} className="set-row set-pending">
                   <span className="set-label">{label}</span>
                   <span className="set-value muted">
-                    {hint ? `${fmtWeight(ex, hint.weight)} × ${hint.reps}` : '—'}
+                    {hintReps !== undefined ? `${fmtWeight(ex, draft.weight)} × ${hintReps}` : '—'}
                   </span>
                 </li>
               );
@@ -254,4 +299,11 @@ export function ExerciseCard({ slot, exercise: ex, options, sessionId, sets, exp
       )}
     </section>
   );
+}
+
+/** "42.5 kg", "18 kg per dumbbell", "+2.5 kg added" */
+function suggestionText(ex: Exercise, weight: number): string {
+  if (ex.loadType === 'added') return `+${fmtKg(weight)} kg added`;
+  if (ex.loadType === 'perDumbbell') return `${fmtKg(weight)} kg per dumbbell`;
+  return `${fmtKg(weight)} kg`;
 }

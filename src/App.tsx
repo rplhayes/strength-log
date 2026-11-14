@@ -2,6 +2,7 @@
 import { useRoute } from './lib/router';
 import { HomeScreen } from './screens/Home';
 import { WorkoutScreen } from './screens/Workout';
+import { SummaryScreen } from './screens/Summary';
 import { TabBar } from './components/TabBar';
 
 export function App() {
@@ -9,6 +10,9 @@ export function App() {
 
   const workout = path.match(/^\/workout\/(\d+)$/);
   if (workout) return <WorkoutScreen sessionId={Number(workout[1])} />;
+
+  const summary = path.match(/^\/summary\/(\d+)$/);
+  if (summary) return <SummaryScreen sessionId={Number(summary[1])} />;
 
   if (path === '/history') {
     return (

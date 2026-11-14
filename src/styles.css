@@ -95,7 +95,7 @@ h1 {
 
 .screen-workout {
   /* No tab bar on the workout screen; leave room for the rest timer later. */
-  padding-bottom: calc(var(--safe-bottom) + 96px);
+  padding-bottom: calc(var(--safe-bottom) + 140px);
 }
 
 .screen-header {
@@ -528,4 +528,205 @@ h1 {
 
 .sheet-actions .btn {
   min-height: var(--tap);
+}
+
+/* ── Progression suggestion ─────────────────────────────────────────────── */
+
+.suggestion {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  border-radius: 10px;
+  border: 1px solid var(--warning);
+  background: color-mix(in srgb, var(--warning) 12%, transparent);
+  font-size: 15px;
+}
+
+.suggestion-accepted {
+  border-color: var(--success);
+  background: color-mix(in srgb, var(--success) 12%, transparent);
+}
+
+.suggestion .btn {
+  flex: none;
+}
+
+/* ── Rest timer bar ─────────────────────────────────────────────────────── */
+
+.rest-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 20;
+  overflow: hidden;
+  padding: 10px calc(var(--safe-right) + 16px) calc(var(--safe-bottom) + 6px) calc(var(--safe-left) + 16px);
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  box-shadow: 0 -6px 20px rgb(0 0 0 / 0.35);
+}
+
+.rest-progress {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 4px;
+  background: var(--accent);
+  transform-origin: left;
+  transition: transform 0.25s linear;
+}
+
+.rest-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.rest-info {
+  display: grid;
+  min-width: 0;
+}
+
+.rest-clock {
+  font-size: 32px;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.rest-label {
+  font-size: 13px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rest-actions {
+  display: flex;
+  gap: 6px;
+  flex: none;
+}
+
+.rest-btn {
+  min-width: 52px;
+  min-height: 52px;
+  padding: 0 10px;
+  border-radius: 12px;
+  border: none;
+  background: var(--surface-2);
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.rest-skip {
+  background: var(--accent);
+  color: var(--accent-text);
+}
+
+.rest-note {
+  max-width: 480px;
+  margin: 6px auto 0;
+  font-size: 11px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.rest-done {
+  animation: rest-flash 0.5s ease-in-out 6 alternate;
+  background: var(--success);
+  color: #0b1f13;
+}
+
+.rest-done .rest-label,
+.rest-done .rest-note {
+  color: #0b1f13;
+}
+
+@keyframes rest-flash {
+  from {
+    background: var(--success);
+  }
+  to {
+    background: var(--surface);
+    color: var(--text);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rest-done {
+    animation: none;
+  }
+}
+
+/* ── Summary ────────────────────────────────────────────────────────────── */
+
+.summary-header p {
+  margin: 0 0 4px;
+}
+
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.stat {
+  display: grid;
+  gap: 2px;
+  padding: 14px 12px;
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.stat-value {
+  font-size: 24px;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-label {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.section-title {
+  font-size: 18px;
+  margin: 8px 0 10px;
+}
+
+.pb-list,
+.summary-list {
+  list-style: none;
+  margin: 0 0 20px;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.pb,
+.summary-list li {
+  display: flex;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.summary-list li {
+  display: block;
+}
+
+.pb-star {
+  color: var(--warning);
+  font-size: 22px;
+  line-height: 1;
 }
